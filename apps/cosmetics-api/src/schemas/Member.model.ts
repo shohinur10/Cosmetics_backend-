@@ -1,7 +1,7 @@
-import { Schema } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 import {
-  MemberAuthType,
-  MemberType,
+  AuthProvider,
+  MemberRole,
   MemberStatus,
 } from '../libs/enums/member.enum';
 
@@ -9,79 +9,80 @@ const MemberSchema = new Schema(
   {
     memberType: {
       type: String,
-      enum: MemberType,
-      default: MemberType.USER,
+      enum: Object.values(MemberRole),
+      default: MemberRole.USER,
     },
+
     memberStatus: {
       type: String,
-      enum: MemberStatus,
+      enum: Object.values(MemberStatus),
       default: MemberStatus.ACTIVE,
+      index: true,
     },
+
     memberAuthType: {
       type: String,
-      enum: MemberAuthType,
-      default: MemberAuthType.EMAIL,
+      enum: Object.values(AuthProvider),
+      default: AuthProvider.LOCAL,
     },
-    memberPhone: {
-      type: String,
-      unique: true,
-      sparse: true,
-      required: false,
-    },
+
+    /**
+     * AUTH FIELDS
+     */
     memberEmail: {
       type: String,
       unique: true,
       sparse: true,
-      required: false,
+      index: true,
     },
-    memberTelegramId: {
+
+    memberPhone: {
       type: String,
       unique: true,
       sparse: true,
-      required: false,
     },
-    memberFaceId: {
-      type: String,
-      unique: true,
-      sparse: true,
-      required: false,
-    },
-    memberNick: {
-      type: String,
-      unique: true,
-      sparse: true,
-      required: true,
-    },
+
     memberPassword: {
       type: String,
       select: false,
-      required: true,
     },
+
+    /**
+     * PROFILE
+     */
+    memberNick: {
+      type: String,
+      unique: true,
+      required: true,
+      index: true,
+    },
+
     memberFullName: {
       type: String,
+      trim: true,
     },
+
     memberImage: {
       type: String,
       default: '',
     },
+
     memberAddress: {
       type: String,
     },
+
     memberDesc: {
       type: String,
     },
-    memberProperties: {
+
+    /**
+     * SIMPLE STATS (keep minimal)
+     */
+    memberProducts: {
       type: Number,
+      default: 0,
     },
     memberArticles: {
-      type: Number,
-      default: 0,
-    },
-    memberFollowers: {
-      type: Number,
-      default: 0,
-    },
-    memberFollowings: {
       type: Number,
       default: 0,
     },
@@ -93,35 +94,48 @@ const MemberSchema = new Schema(
       type: Number,
       default: 0,
     },
-    memberCommits: {
-      type: Number,
-      default: 0,
-    },
     memberRank: {
       type: Number,
       default: 0,
     },
-    memberWarnings: {
-      type: Number,
-      default: 0,
-    },
-    memberBlocks: {
+    followerCount: {
       type: Number,
       default: 0,
     },
 
-    memberCreatedAt: {
-      type: Date,
-      default: Date.now,
+    followingCount: {
+      type: Number,
+      default: 0,
     },
-    memberUpdatedAt: {
-      type: Date,
-      default: Date.now,
+    // Backward-compatible counters used by existing services/DTOs
+    memberFollowers: {
+      type: Number,
+      default: 0,
     },
+    memberFollowings: {
+      type: Number,
+      default: 0,
+    },
+
+    /**
+     * SECURITY
+     */
+    memberWarnings: {
+      type: Number,
+      default: 0,
+    },
+
+    /**
+     * SOFT DELETE
+     */
     deletedAt: {
       type: Date,
     },
   },
-  { timestamps: true, collection: 'members' },
+  {
+    timestamps: true,
+    collection: 'members',
+  },
 );
+
 export default MemberSchema;

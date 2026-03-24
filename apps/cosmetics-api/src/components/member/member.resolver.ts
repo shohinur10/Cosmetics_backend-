@@ -7,7 +7,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import {
-  AgentsInquiry,
+  SellersInquiry,
   LoginInput,
   MemberInput,
   MembersInquiry,
@@ -46,7 +46,7 @@ export class MemberResolver {
 
     return await this.memberService.login(input);
   }
-  // Authenticated : (user ,admin ,agent )
+  // Authenticated : (user, admin, seller)
   @UseGuards(AuthGuard)
   @Mutation(() => Member)
   public async updateMember(
@@ -97,15 +97,15 @@ export class MemberResolver {
   }
 
   @Query(() => Members)
-  public async getAgents(
-    @Args('input') input: AgentsInquiry,
+  public async getSellers(
+    @Args('input') input: SellersInquiry,
     @AuthMember('_id') memberId: ObjectId,
   ): Promise<Members> {
     try {
-      console.log('Input for getAgents:', input);
-      return await this.memberService.getAgents(memberId, input);
+      console.log('Input for getSellers:', input);
+      return await this.memberService.getSellers(memberId, input);
     } catch (error) {
-      console.error('Error in getAgents resolver:', error);
+      console.error('Error in getSellers resolver:', error);
       throw error;
     }
   }

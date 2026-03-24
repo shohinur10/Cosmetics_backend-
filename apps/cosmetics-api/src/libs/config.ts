@@ -1,6 +1,6 @@
 import { ObjectId } from 'bson'; //Ko‘p hollarda string ko‘rinishidagi id larni ObjectId ga aylantirish kerak bo‘ladi (aksi holda Mongo query ishlamaydi).
 
-export const availableAgentSorts = [
+export const availableSellerSorts = [
   'createdAt',
   'updateAt',
   'memberLikes',
@@ -24,7 +24,7 @@ export const availableProductSorts = [
   'productPrice',
   'productStock',
 ];
-export const availablePropertySorts = availableProductSorts;
+export const availableListingSorts = availableProductSorts;
 export const availableBoardArticleSorts = [
   'createdAt',
   'updatedAt',
@@ -52,7 +52,7 @@ export const shapeIntoMongoObjectId = (target: any) => {
 
 export const lookupAuthMemberLiked = (
   memberId: T, // Foydalanuvchining ID si (like qilgan odam)
-  targetRefId: string = '$_id', // targetRefId — bu "qaysi element (property, post, article va hokazo) like qilinganini" aniqlash uchun ishlatiladi.
+  targetRefId: string = '$_id', // targetRefId identifies which entity (product, post, article, etc.) was liked.
 ) => {
   return {
     $lookup: {

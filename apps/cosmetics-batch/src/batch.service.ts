@@ -28,15 +28,15 @@ export class BatchService {
       .exec();
   }
 
-  public async batchTopProperties(): Promise<void> {
-    const properties: Product[] = await this.productModel
+  public async batchTopProducts(): Promise<void> {
+    const products: Product[] = await this.productModel
       .find({
         productStatus: ProductStatus.ACTIVE,
         productRank: 0,
       })
       .exec();
 
-    const promisedList = properties.map(async (ele: Product) => {
+    const promisedList = products.map(async (ele: Product) => {
       // botta map orqali iteration qilyapmiz
       const { _id, productLikes, productViews } = ele;
       const rank = productLikes * 2 + productViews * 1;
@@ -47,8 +47,8 @@ export class BatchService {
     await Promise.all(promisedList);
   }
 
-  public async batchTopAgents(): Promise<void> {
-    const agents: Member[] = await this.memberModel
+  public async batchTopSellers(): Promise<void> {
+    const sellers: Member[] = await this.memberModel
       .find({
         memberType: MemberType.SELLER,
         memberStatus: MemberStatus.ACTIVE,
@@ -56,25 +56,25 @@ export class BatchService {
       })
       .exec();
 
-    const promisedList = agents.map(async (ele: Member) => {
+    const promisedList = sellers.map(async (ele: Member) => {
       const {
         _id,
-        memberProperties = 0,
+        memberProducts = 0,
         memberArticles = 0,
         memberLikes = 0,
         memberViews = 0,
       } = ele;
 
       const rank =
-        (memberProperties || 0) * 5 +
+        (memberProducts || 0) * 5 +
         (memberArticles || 0) * 3 +
         (memberLikes || 0) * 2 +
         (memberViews || 0) * 1;
 
       // Log for debugging
-      console.log('Calculated rank for agent:', {
+      console.log('Calculated rank for seller:', {
         id: _id,
-        memberProperties,
+        memberProducts,
         memberArticles,
         memberLikes,
         memberViews,

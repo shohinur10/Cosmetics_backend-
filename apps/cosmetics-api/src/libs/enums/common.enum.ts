@@ -1,32 +1,40 @@
 import { registerEnumType } from '@nestjs/graphql';
 
-export enum Message {
-  SOMETHING_WENT_WRONG = 'Something went wrong',
-  NO_DATA_FOUND = 'No data found',
-  CREATE_FAILED = 'Create failed',
-  UPDATED_FAILED = 'Updated failed',
-  REMOVE_FAILED = 'Remove failed',
-  UPLOAD_FAILED = 'Upload failed',
-  BAD_REQUEST = 'Bad request',
+/**
+ * ERROR CODES (NOT MESSAGES)
+ */
+export enum ErrorCode {
+  SOMETHING_WENT_WRONG = 'SOMETHING_WENT_WRONG',
+  NO_DATA_FOUND = 'NO_DATA_FOUND',
+  CREATE_FAILED = 'CREATE_FAILED',
+  UPDATE_FAILED = 'UPDATE_FAILED',
+  REMOVE_FAILED = 'REMOVE_FAILED',
+  UPLOAD_FAILED = 'UPLOAD_FAILED',
+  BAD_REQUEST = 'BAD_REQUEST',
 
-  NO_MEMBER_NICK = 'No member nick found',
-  USED_MEMBER_NICK_OR_PHONE = 'Member nick or phone is already used',
-  BLOCKED_USER = 'You have been blocked',
-  WRONG_PASSWORD = 'Wrong password, Try again',
-  NOT_AUTHENTICATED = ' You Are Not authenticated, please login first',
-  TOKEN_NOT_EXISTED = 'Bearer Token is not provided',
-  ONLY_SPECIFIC_ROLES_ALLOWED = 'Allowed only for members with specific roles',
-  NOT_ALLOWED_REQUEST = 'Not allowed request',
-  PROVIDE_ALLOWED_FORMAT = 'Please provide jpg, jpeg or png images',
-  SELF_SUBSCRIPTION_DENIED = 'Self subscription denied',
-  MEMBER_BLOCKED = 'MEMBER_BLOCKED',
+  USER_NOT_FOUND = 'USER_NOT_FOUND',
+  USER_ALREADY_EXISTS = 'USER_ALREADY_EXISTS',
+  USER_BLOCKED = 'USER_BLOCKED',
+  WRONG_PASSWORD = 'WRONG_PASSWORD',
+  NOT_AUTHENTICATED = 'NOT_AUTHENTICATED',
+  TOKEN_MISSING = 'TOKEN_MISSING',
+  FORBIDDEN = 'FORBIDDEN',
+  INSUFFICIENT_STOCK = 'INSUFFICIENT_STOCK',
+  INVALID_ORDER_STATUS_TRANSITION = 'INVALID_ORDER_STATUS_TRANSITION',
+  INVALID_DELIVERY_STATUS_TRANSITION = 'INVALID_DELIVERY_STATUS_TRANSITION',
+  IDEMPOTENCY_CONFLICT = 'IDEMPOTENCY_CONFLICT',
 }
+registerEnumType(ErrorCode, {
+  name: 'ErrorCode',
+});
 
+/**
+ * SORT DIRECTION
+ */
 export enum Direction {
   ASC = 'ASC',
   DESC = 'DESC',
 }
-
 registerEnumType(Direction, {
   name: 'Direction',
 });

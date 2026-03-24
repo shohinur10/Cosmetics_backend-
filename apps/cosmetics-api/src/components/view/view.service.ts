@@ -29,7 +29,7 @@ export class ViewService {
     return result; // ✅ No more error throwing
   }
 
-  public async getVisitedProperties(
+  public async getVisitedProducts(
     memberId: ObjectId,
     input: OrdinaryInquiry,
   ): Promise<Products> {
@@ -37,7 +37,7 @@ export class ViewService {
     const match: T = { viewGroup: ViewGroup.PRODUCT, memberId: memberId };
     const data: T = await this.viewModel
       .aggregate([
-        { $match: match }, //Filter: faqat kerakli memberId va PROPERTY turidagi yozuvlar olinadi.
+        { $match: match }, // Filter by current member and product view group.
         { $sort: { updatedAt: -1 } }, // sort by the last view from the top
         {
           $lookup: {
@@ -54,7 +54,7 @@ export class ViewService {
             list: [
               { $skip: (page - 1) * limit },
               { $limit: limit },
-              lookupVisit, //lookupVisit: bu ehtimol visitedProperty ichidagi boshqa bog‘liq ma’lumotlarni olish uchun ishlatiladi (masalan: agent, user, va h.k.).
+              lookupVisit, // Attach viewed product seller data.
               { $unwind: '$visitedProduct.memberData' },
             ],
             metaCounter: [{ $count: 'total' }],

@@ -8,7 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { Member, Members } from '../../libs/dto/member';
 import {
-  AgentsInquiry,
+  SellersInquiry,
   LoginInput,
   MemberInput,
   MembersInquiry,
@@ -100,9 +100,12 @@ export class MemberService {
       throw new InternalServerErrorException(Message.NO_MEMBER_NICK);
     }
 
-    if (!response || response.memberStatus === MemberStatus.DELETED) {
+    if (!response || response.memberStatus === MemberStatus.DEACTIVATED) {
       throw new InternalServerErrorException(Message.NO_MEMBER_NICK);
-    } else if (response.memberStatus === MemberStatus.BLOCK) {
+    } else if (
+      response.memberStatus === MemberStatus.BANNED ||
+      response.memberStatus === MemberStatus.SUSPENDED
+    ) {
       throw new InternalServerErrorException(Message.MEMBER_BLOCKED);
     }
     //TODO:  compare  password verification logic here
@@ -147,7 +150,7 @@ export class MemberService {
     const search: T = {
       _id: targetId,
       memberStatus: {
-        $in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
+        $in: [MemberStatus.ACTIVE, MemberStatus.SUSPENDED],
       },
     };
     const targetMember: any = await this.memberModel
@@ -189,9 +192,9 @@ export class MemberService {
     return targetMember;
   }
 
-  public async getAgents(
+  public async getSellers(
     memberId: ObjectId,
-    input: AgentsInquiry,
+    input: SellersInquiry,
   ): Promise<Members> {
     const { text } = input.search;
 

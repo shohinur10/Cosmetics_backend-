@@ -6,33 +6,36 @@ import {
   BoardArticleStatus,
 } from '../../enums/board-article.enum';
 import { Direction } from '../../enums/common.enum';
-import { availableBoardArticleSorts } from '../../config';
 
 @InputType()
 export class BoardArticleInput {
-  @IsNotEmpty()
-  @Field(() => BoardArticleCategory)
-  articleCategory: BoardArticleCategory;
+  @IsOptional()
+  @Field(() => BoardArticleCategory, { nullable: true })
+  articleCategory?: BoardArticleCategory;
 
   @IsNotEmpty()
-  @Length(3, 50)
+  @Length(3, 200)
   @Field(() => String)
   articleTitle: string;
 
   @IsNotEmpty()
-  @Length(3, 250)
+  @Length(3, 5000)
   @Field(() => String)
   articleContent: string;
 
   @IsOptional()
-  @Field(() => String, { nullable: true })
-  articleImage?: string;
+  @Field(() => [String], { nullable: true })
+  articleImages?: string[];
 
   memberId?: ObjectId;
 }
 
 @InputType()
-class BAISearch {
+class BoardArticlesSearch {
+  @IsOptional()
+  @Field(() => String, { nullable: true })
+  memberId?: ObjectId;
+
   @IsOptional()
   @Field(() => BoardArticleCategory, { nullable: true })
   articleCategory?: BoardArticleCategory;
@@ -40,10 +43,6 @@ class BAISearch {
   @IsOptional()
   @Field(() => String, { nullable: true })
   text?: string;
-
-  @IsOptional()
-  @Field(() => String, { nullable: true })
-  memberId?: ObjectId;
 }
 
 @InputType()
@@ -59,7 +58,7 @@ export class BoardArticlesInquiry {
   limit: number;
 
   @IsOptional()
-  @IsIn(availableBoardArticleSorts)
+  @IsIn(['createdAt', 'updatedAt', 'articleViews', 'articleLikes', 'articleRank'])
   @Field(() => String, { nullable: true })
   sort?: string;
 
@@ -68,12 +67,12 @@ export class BoardArticlesInquiry {
   direction?: Direction;
 
   @IsNotEmpty()
-  @Field(() => BAISearch)
-  search: BAISearch;
+  @Field(() => BoardArticlesSearch)
+  search: BoardArticlesSearch;
 }
 
 @InputType()
-class ABAISearch {
+class AllBoardArticlesSearch {
   @IsOptional()
   @Field(() => BoardArticleStatus, { nullable: true })
   articleStatus?: BoardArticleStatus;
@@ -96,7 +95,7 @@ export class AllBoardArticlesInquiry {
   limit: number;
 
   @IsOptional()
-  @IsIn(availableBoardArticleSorts)
+  @IsIn(['createdAt', 'updatedAt', 'articleViews', 'articleLikes', 'articleRank'])
   @Field(() => String, { nullable: true })
   sort?: string;
 
@@ -105,6 +104,6 @@ export class AllBoardArticlesInquiry {
   direction?: Direction;
 
   @IsNotEmpty()
-  @Field(() => ABAISearch)
-  search: ABAISearch;
+  @Field(() => AllBoardArticlesSearch)
+  search: AllBoardArticlesSearch;
 }

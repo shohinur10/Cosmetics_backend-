@@ -1,10 +1,10 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { ObjectId } from 'mongoose';
+import { Member, TotalCounter } from '../member';
 import {
   BoardArticleCategory,
   BoardArticleStatus,
 } from '../../enums/board-article.enum';
-import { ObjectId } from 'mongoose';
-import { Member, TotalCounter } from '../member';
 
 @ObjectType()
 export class BoardArticle {
@@ -23,8 +23,8 @@ export class BoardArticle {
   @Field(() => String)
   articleContent: string;
 
-  @Field(() => String, { nullable: true })
-  articleImage?: string;
+  @Field(() => [String], { nullable: true })
+  articleImages?: string[];
 
   @Field(() => Int)
   articleViews: number;
@@ -35,6 +35,9 @@ export class BoardArticle {
   @Field(() => Int)
   articleComments: number;
 
+  @Field(() => Int)
+  articleRank: number;
+
   @Field(() => String)
   memberId: ObjectId;
 
@@ -43,8 +46,6 @@ export class BoardArticle {
 
   @Field(() => Date)
   updatedAt: Date;
-
-  /** from aggregation **/
 
   @Field(() => Member, { nullable: true })
   memberData?: Member;

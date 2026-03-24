@@ -1,20 +1,35 @@
-import { Schema } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 
 const FollowSchema = new Schema(
   {
-    followingId: {
-      type: Schema.Types.ObjectId,
+    // User who follows
+    followerId: {
+      type: Types.ObjectId,
+      ref: 'Member',
       required: true,
+      index: true,
     },
 
-    followerId: {
-      type: Schema.Types.ObjectId,
+    // User being followed
+    followingId: {
+      type: Types.ObjectId,
+      ref: 'Member',
       required: true,
+      index: true,
+    },
+
+    // Optional: for soft unfollow (future-proof)
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true, collection: 'follows' },
 );
 
-FollowSchema.index({ followingId: 1, followerId: 1 }, { unique: true });
+/**
+ * Prevent duplicate follow
+ */
+FollowSchema.index({ followerId: 1, followingId: 1 }, { unique: true });
 
 export default FollowSchema;

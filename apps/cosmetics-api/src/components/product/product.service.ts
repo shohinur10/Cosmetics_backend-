@@ -50,7 +50,7 @@ export class ProductService {
       const result = await this.productModel.create(input);
       await this.memberService.memberStatsEditor({
         _id: result.memberId,
-        targetKey: 'memberProperties',
+        targetKey: 'memberProducts',
         modifier: 1,
       });
       return result;
@@ -129,7 +129,7 @@ export class ProductService {
     if (outOfStockAt || deletedAt) {
       await this.memberService.memberStatsEditor({
         _id: memberId,
-        targetKey: 'memberProperties',
+        targetKey: 'memberProducts',
         modifier: -1,
       });
     }
@@ -175,36 +175,37 @@ export class ProductService {
     const {
       memberId,
       regionList,
-      roomsList,
-      bedsList,
+      packCountList,
+      unitsPerPackList,
       typeList,
       brandList,
       periodsRange,
       pricesRange,
-      squaresRange,
-      volumesRange,
+      weightRange,
+      volumeRange,
       options,
       text,
     } = input.search;
     if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
     if (regionList?.length) match.productRegion = { $in: regionList };
-    if (roomsList?.length) match.productPackCount = { $in: roomsList };
-    if (bedsList?.length) match.productUnitsPerPack = { $in: bedsList };
+    if (packCountList?.length) match.productPackCount = { $in: packCountList };
+    if (unitsPerPackList?.length)
+      match.productUnitsPerPack = { $in: unitsPerPackList };
     if (typeList?.length) match.productType = { $in: typeList };
     if (brandList?.length) match.productBrand = { $in: brandList };
     if (pricesRange)
       match.productPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
     if (periodsRange)
       match.createdAt = { $gte: periodsRange.start, $lte: periodsRange.end };
-    if (squaresRange)
+    if (weightRange)
       match.productWeightGrams = {
-        $gte: squaresRange.start,
-        $lte: squaresRange.end,
+        $gte: weightRange.start,
+        $lte: weightRange.end,
       };
-    if (volumesRange)
+    if (volumeRange)
       match.productVolumeMl = {
-        $gte: volumesRange.start,
-        $lte: volumesRange.end,
+        $gte: volumeRange.start,
+        $lte: volumeRange.end,
       };
     if (text) match.productTitle = { $regex: new RegExp(text, 'i') };
     if (options) match['$or'] = options.map((ele) => ({ [ele]: true }));
@@ -214,14 +215,14 @@ export class ProductService {
     memberId: ObjectId,
     input: OrdinaryInquiry,
   ): Promise<Products> {
-    return await this.likeService.getFavoriteProperties(memberId, input);
+    return await this.likeService.getFavoriteProducts(memberId, input);
   }
 
   public async getVisited(
     memberId: ObjectId,
     input: OrdinaryInquiry,
   ): Promise<Products> {
-    return await this.viewService.getVisitedProperties(memberId, input);
+    return await this.viewService.getVisitedProducts(memberId, input);
   }
 
   public async getBrandProducts(
@@ -361,7 +362,7 @@ export class ProductService {
     if (outOfStockAt || deletedAt) {
       await this.memberService.memberStatsEditor({
         _id: result.memberId,
-        targetKey: 'memberProperties',
+        targetKey: 'memberProducts',
         modifier: -1,
       });
     }

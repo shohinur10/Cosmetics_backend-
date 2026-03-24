@@ -1,18 +1,24 @@
 import { registerEnumType } from '@nestjs/graphql';
 
+/**
+ * COMMENT STATUS (LIFECYCLE)
+ */
 export enum CommentStatus {
   ACTIVE = 'ACTIVE',
-  DELETE = 'DELETE',
+  HIDDEN = 'HIDDEN',     // moderated / reported
+  ARCHIVED = 'ARCHIVED', // soft delete
 }
 registerEnumType(CommentStatus, {
   name: 'CommentStatus',
 });
 
-export enum CommentGroup {
-  MEMBER = 'MEMBER',
-  ARTICLE = 'ARTICLE',
+/**
+ * COMMENT TARGET (WHERE COMMENT BELONGS)
+ */
+export enum CommentTarget {
   PRODUCT = 'PRODUCT',
+  ARTICLE = 'ARTICLE',
 }
-registerEnumType(CommentGroup, {
-  name: 'CommentGroup',
+registerEnumType(CommentTarget, {
+  name: 'CommentTarget',
 });

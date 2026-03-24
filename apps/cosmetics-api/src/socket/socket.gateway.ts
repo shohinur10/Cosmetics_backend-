@@ -9,6 +9,9 @@ import { Server, WebSocket } from 'ws';
 import * as url from 'url';
 import { AuthService } from '../components/auth/auth.service';
 import { Member } from '../libs/dto/member';
+import { SupportChatService } from '../components/support-chat/support-chat.service';
+import { SupportSenderType } from '../libs/enums/support-chat.enum';
+import { shapeIntoMongoObjectId } from '../libs/config';
 
 interface MessagePayload {
   event: string;
@@ -30,7 +33,10 @@ export class SocketGateway implements OnGatewayInit {
   private clientAuthMap = new Map<WebSocket, Member | null>();
   private messagesList: MessagePayload[] = [];
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private supportChatService: SupportChatService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -112,6 +118,63 @@ export class SocketGateway implements OnGatewayInit {
     const clientNick: string = authMember?.memberNick ?? 'guest';
     this.logger.verbose(`message: ${clientNick} : ${payload}`);
     this.emitMessage(newMsg);
+  }
+
+  @SubscribeMessage('support:joinRoom')
+  public async handleSupportJoinRoom(client: WebSocket, payload: string): Promise<void> {
+    const authMember = this.clientAuthMap.get(client);
+    if (!authMember?._id) return;
+
+    const parsed = this.safeJson(payload);
+    const roomId = parsed?.roomId;
+    if (!roomId) return;
+
+    client.send(
+      JSON.stringify({
+        event: 'support:joined',
+        roomId,
+      }),
+    );
+  }
+
+  @SubscribeMessage('support:message')
+  public async handleSupportMessage(client: WebSocket, payload: string): Promise<void> {
+    const authMember = this.clientAuthMap.get(client);
+    if (!authMember?._id) return;
+
+    const parsed = this.safeJson(payload);
+    const roomId = parsed?.roomId;
+    const messageText = parsed?.messageText;
+    if (!roomId || !messageText) return;
+
+    const senderType =
+      authMember.memberType === 'ADMIN' || authMember.memberType === 'SELLER'
+        ? SupportSenderType.SELLER
+        : SupportSenderType.CUSTOMER;
+
+    const created = await this.supportChatService.sendMessage(
+      shapeIntoMongoObjectId(authMember._id) as any,
+      senderType,
+      { roomId, messageText },
+    );
+
+    this.emitMessage({
+      event: 'support:message',
+      text: messageText,
+      memberData: authMember,
+      roomId,
+      messageId: String(created._id),
+      senderType,
+      createdAt: created.createdAt,
+    } as any);
+  }
+
+  private safeJson(payload: string): any {
+    try {
+      return JSON.parse(payload);
+    } catch {
+      return null;
+    }
   }
 
   private broadcastMessage(sender: WebSocket, message: InfoPayload) {
