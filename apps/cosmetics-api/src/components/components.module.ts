@@ -15,12 +15,14 @@ import { PaymentModule } from './payment/payment.module';
 import { ReviewModule } from './review/review.module';
 import { SupportChatModule } from './support-chat/support-chat.module';
 import { OrderModule } from './order/order.module';
+import { SitemapModule } from './sitemap/sitemap.module';
 
 @Module({
   imports: [
     MemberModule,
     AuthModule,
     ProductModule,
+    SitemapModule,
     BoardArticleModule,
     LikeModule,
     ViewModule,

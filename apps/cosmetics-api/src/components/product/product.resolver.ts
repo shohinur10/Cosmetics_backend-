@@ -44,6 +44,15 @@ export class ProductResolver {
     return await this.productService.getProduct(memberId, productId);
   }
 
+  @UseGuards(WithoutGuard)
+  @Query(() => Product)
+  public async getProductBySlug(
+    @Args('slug') slug: string,
+    @AuthMember('_id') memberId: ObjectId,
+  ): Promise<Product> {
+    return await this.productService.getProductBySlug(memberId, slug.trim());
+  }
+
   @Roles(MemberType.SELLER)
   @UseGuards(RolesGuard)
   @Mutation(() => Product)

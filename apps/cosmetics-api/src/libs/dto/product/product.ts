@@ -2,6 +2,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import {
   ProductRegion,
   ProductStatus,
+  ProductSubType,
   ProductType,
 } from '../../enums/product.enum';
 import { ObjectId } from 'mongoose';
@@ -15,8 +16,17 @@ export class Product {
   @Field(() => ProductType)
   productType: ProductType;
 
+  @Field(() => ProductSubType, { nullable: true })
+  productSubType?: ProductSubType;
+
   @Field(() => ProductStatus)
   productStatus: ProductStatus;
+
+  @Field(() => String, { nullable: true })
+  categorySlug?: string;
+
+  @Field(() => String, { nullable: true })
+  subcategorySlug?: string;
 
   @Field(() => ProductRegion)
   productRegion: ProductRegion;
@@ -80,6 +90,18 @@ export class Product {
 
   @Field(() => String, { nullable: true })
   productDesc?: string;
+
+  @Field(() => String, { nullable: true })
+  seoTitle?: string;
+
+  @Field(() => String, { nullable: true })
+  seoDescription?: string;
+
+  @Field(() => String, { nullable: true })
+  slug?: string;
+
+  @Field(() => [String], { nullable: true })
+  keywords?: string[];
 
   @Field(() => Boolean, { nullable: true })
   productBarter?: boolean;

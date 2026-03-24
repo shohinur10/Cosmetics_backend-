@@ -2,6 +2,7 @@ import { Schema } from 'mongoose';
 import {
   ProductRegion,
   ProductStatus,
+  ProductSubType,
   ProductType,
 } from '../libs/enums/product.enum';
 
@@ -34,6 +35,13 @@ const ProductSchema = new Schema(
     coverImage: { type: String, required: true },
     productImages: { type: [String], required: true },
     productDesc: { type: String, trim: true, maxlength: 2000 },
+    seoTitle: { type: String, trim: true, maxlength: 160 },
+    seoDescription: { type: String, trim: true, maxlength: 320 },
+    slug: { type: String, trim: true, lowercase: true, maxlength: 200 },
+    /** SEO path: /products/{categorySlug}/{subcategorySlug} (e.g. skincare / vitamin-c-serum). */
+    categorySlug: { type: String, trim: true, lowercase: true, maxlength: 64 },
+    subcategorySlug: { type: String, trim: true, lowercase: true, maxlength: 200 },
+    keywords: { type: [String], default: [] },
     productBarter: { type: Boolean, default: false },
     productRent: { type: Boolean, default: false },
     productIsCrueltyFree: { type: Boolean, default: false },
@@ -59,5 +67,21 @@ ProductSchema.index({ productBrand: 1 });
 ProductSchema.index({ productViews: -1 });
 ProductSchema.index({ productLikes: -1 });
 ProductSchema.index({ productRank: -1 });
+/** Sparse unique: legacy documents without `slug` remain valid; new writes always set slug. */
+ProductSchema.index({ slug: 1 }, { unique: true, sparse: true });
+/** Category filters / merchandising (productType is the main “category” facet). */
+ProductSchema.index({ productType: 1 });
+/** Recency sorts and feeds. */
+ProductSchema.index({ createdAt: -1 });
+/** Category + recency list queries. */
+ProductSchema.index({ productType: 1, createdAt: -1 });
+/**
+ * Unique (category, public sub-path) for /products/:category/:subcategory.
+ * Sparse so legacy documents without slugs remain valid.
+ */
+ProductSchema.index(
+  { categorySlug: 1, subcategorySlug: 1 },
+  { unique: true, sparse: true },
+);
 
 export default ProductSchema;

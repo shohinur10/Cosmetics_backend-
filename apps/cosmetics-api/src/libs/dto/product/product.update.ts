@@ -1,9 +1,20 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import { ObjectId } from 'mongoose';
 import {
   ProductRegion,
   ProductStatus,
+  ProductSubType,
   ProductType,
 } from '../../enums/product.enum';
 
@@ -34,6 +45,40 @@ export class ProductUpdate {
   @Length(3, 100)
   @Field(() => String, { nullable: true })
   productTitle?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(160)
+  @Field(() => String, { nullable: true })
+  seoTitle?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(320)
+  @Field(() => String, { nullable: true })
+  seoDescription?: string;
+
+  /** Pass empty string to re-generate from the current title. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  @Field(() => String, { nullable: true })
+  slug?: string;
+
+  /** Pass empty string to realign with the current product `slug`. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  @Field(() => String, { nullable: true })
+  subcategorySlug?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(50)
+  @IsString({ each: true })
+  @Length(1, 80, { each: true })
+  @Field(() => [String], { nullable: true })
+  keywords?: string[];
 
   @IsOptional()
   @Field(() => Number, { nullable: true })

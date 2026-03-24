@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ProductResolver } from './product.resolver';
+import { ProductController } from './product.controller';
+import { ProductSeoCacheService } from './product-seo-cache.service';
 import { ProductService } from './product.service';
 import { AuthModule } from '../auth/auth.module';
 import { ViewModule } from '../view/view.module';
@@ -18,7 +20,8 @@ import { NotificationModule } from '../notification/notification.module';
     LikeModule,
     NotificationModule,
   ],
-  providers: [ProductResolver, ProductService],
+  controllers: [ProductController],
+  providers: [ProductResolver, ProductSeoCacheService, ProductService],
   exports: [ProductService],
 })
 export class ProductModule {}

@@ -2,14 +2,19 @@ import { Field, InputType, Int } from '@nestjs/graphql';
 import {
   ProductRegion,
   ProductStatus,
+  ProductSubType,
   ProductType,
 } from '../../enums/product.enum';
 import {
+  ArrayMaxSize,
+  IsArray,
   IsIn,
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsString,
   Length,
+  MaxLength,
   Min,
 } from 'class-validator';
 import { ObjectId } from 'mongoose';
@@ -35,6 +40,43 @@ export class ProductInput {
   @Length(3, 100)
   @Field(() => String)
   productTitle: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(160)
+  @Field(() => String, { nullable: true })
+  seoTitle?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(320)
+  @Field(() => String, { nullable: true })
+  seoDescription?: string;
+
+  /** If omitted, a unique slug is generated from `productTitle` (kebab-case). */
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  @Field(() => String, { nullable: true })
+  slug?: string;
+
+  /**
+   * Second segment of /products/{category}/{subcategory} for keyword-rich URLs.
+   * Defaults to the product `slug` when omitted.
+   */
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  @Field(() => String, { nullable: true })
+  subcategorySlug?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(50)
+  @IsString({ each: true })
+  @Length(1, 80, { each: true })
+  @Field(() => [String], { nullable: true })
+  keywords?: string[];
 
   @IsNotEmpty()
   @Field(() => Number)
