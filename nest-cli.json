@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/cosmetics-api/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/cosmetics-api/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/cosmetics-api",
+  "projects": {
+    "cosmetics-api": {
+      "type": "application",
+      "root": "apps/cosmetics-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/cosmetics-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/cosmetics-api/tsconfig.app.json"
+      }
+    },
+    "cosmetics-batch": {
+      "type": "application",
+      "root": "apps/cosmetics-batch",
+      "entryFile": "main",
+      "sourceRoot": "apps/cosmetics-batch/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/cosmetics-batch/tsconfig.app.json"
+      }
+    }
+  }
+}
